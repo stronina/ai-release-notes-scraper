@@ -1,0 +1,31 @@
+name: Weekly Scraper
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"   # понедельник 06:00 UTC
+  workflow_dispatch:      # можно запускать вручную
+
+jobs:
+  run-scraper:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run scraper
+        env:
+          AIRTABLE_TOKEN: ${{ secrets.AIRTABLE_TOKEN }}
+          AIRTABLE_BASE: ${{ secrets.AIRTABLE_BASE }}
+          AIRTABLE_TABLE: ${{ secrets.AIRTABLE_TABLE }}
+        run: |
+          python scrape.py
